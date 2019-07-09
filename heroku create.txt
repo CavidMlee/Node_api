@@ -1,0 +1,12 @@
+const port = process.env.PORT || 3000;   --portu qeyd edirik
+"start":"node server/server.js",         --package.json-da yaziriq
+"engines": { "node":"8.11.4" },          --package.json-da yaziriq
+
+
+***Terminal***
+1.heroku create
+2.heroku addons:create mongolab:sandbox  -- bunun ucun gerek kredit kartin olsun ki databazani mLab uzerinden herokuya yerlesdiresen amma free-dir
+3.heroku config
+4.git commit -am 'Set up for heroku'
+5.git push
+6.git push heroku master
