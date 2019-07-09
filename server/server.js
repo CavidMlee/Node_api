@@ -6,13 +6,15 @@ const { ObjectId } = require('mongodb');
 const { Todo } = require('./moduls/todo.js');
 const { User } = require('./moduls/users.js');
 
+const port = process.env.PORT || 3000;    //1ci Heroku 2 ci localhost ucundur
+
 const app = express();
 
 app.use(bodyParser.json());
 
-app.post('/todos', (req, res) => {
+app.post('/todos', (req, res) => {                    //post ishi
     const todo = new Todo({
-        text: req.body.text
+        text: req.body.text                          //postman-dan verdiyimiz text-i goturur
     });
 
     todo.save().then((doc) => {
@@ -22,7 +24,7 @@ app.post('/todos', (req, res) => {
     });
 });
 
-app.get('/todos', (req, res) => {
+app.get('/todos', (req, res) => {                 //get ishi hamsini listeleyir
     Todo.find().then((todos) => {
         res.send({ todos })                      //json oldugu ucun obyekt kimi yazdiq yeni {}-icinde
     }, (e) => {
@@ -30,10 +32,10 @@ app.get('/todos', (req, res) => {
     });
 });
 
-app.get('/todos/:id', (req, res) => {
+app.get('/todos/:id', (req, res) => {                     //get isi id-ye gore
     const id = req.params.id
 
-    if (!ObjectId.isValid(id)) {
+    if (!ObjectId.isValid(id)) {                          //bele id yoxdusa
         res.status(404).send();
     }
 
@@ -49,8 +51,8 @@ app.get('/todos/:id', (req, res) => {
 
 })
 
-app.listen(3000, () => {
-    console.log('Started on port 3000')
+app.listen(port, () => {
+    console.log(`Started on port ${port}`)
 });
 
 module.exports = { app };
