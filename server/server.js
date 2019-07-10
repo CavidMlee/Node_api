@@ -1,3 +1,6 @@
+require('./config/config.js')    // bizim elaqe js-miz
+
+const _ = require('lodash');                  //npm i --save lodash@4.15.0
 const express = require('express');          //npm i express@4.14.0 --save
 const bodyParser = require('body-parser');   //npm i body-parser@1.15.2 --save
 const mongoose = require("./db/mongoose.js");
@@ -6,7 +9,7 @@ const { ObjectId } = require('mongodb');
 const { Todo } = require('./moduls/todo.js');
 const { User } = require('./moduls/users.js');
 
-const port = process.env.PORT || 3000;    //1ci Heroku 2 ci localhost ucundur
+const port = process.env.PORT // Heroku ve localhost ucundur
 
 const app = express();
 
@@ -49,7 +52,7 @@ app.get('/todos/:id', (req, res) => {                     //get isi id-ye gore
         res.status(400).send();
     })
 
-})
+});
 
 app.delete('/todos/:id', (req, res) => {                   //id-ye gore silmek
     const id = req.params.id;
@@ -63,11 +66,37 @@ app.delete('/todos/:id', (req, res) => {                   //id-ye gore silmek
             return res.status(404).send();
         }
 
-        res.send({todo})
+        res.send({ todo })
     }).catch((e) => {
         res.status(400).send();
     });
-})
+});
+
+app.patch('/todos/:id', (req, res) => {                     //update isidir.CompletedAt-i update edirik competed-e gore
+    var id = req.params.id;
+    var body = _.pick(req.body, ['text', 'completed']);     //lodash-in pick funksiyasidi.pick - icind eobyekt saxlayir
+
+    if (!ObjectId.isValid(id)) {
+        return res.status(404).send();
+    }
+
+    if (_.isBoolean(body.completed) && body.completed) {    //lodash-in isBollean funksiyasi true ve ya false qaytarir
+        body.completedAt = new Date().getTime();              //true olsa completedAt-e zaman yaz
+    } else {
+        body.completed = false;
+        body.completedAt = null;
+    }
+
+    Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then((todo) => {   //update isi
+        if (!todo) {
+            return res.status(404).send();
+        }
+
+        res.send({ todo });
+    }).catch((e) => {
+        res.status(400).send();
+    })
+});
 
 app.listen(port, () => {
     console.log(`Started on port ${port}`)
