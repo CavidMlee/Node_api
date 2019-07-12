@@ -8,6 +8,7 @@ const { ObjectId } = require('mongodb');
 
 const { Todo } = require('./moduls/todo.js');
 const { User } = require('./moduls/users.js');
+const {authenticate} = require('./middleware/authenticate');
 
 const port = process.env.PORT // Heroku ve localhost ucundur
 
@@ -113,7 +114,11 @@ app.post('/users', (req, res) => {                      //post ishi
     });
 });
 
-app.listen(port, () => {
+app.get('/users/me',authenticate, (req, res) => {          //user-in get isi
+    res.send(req.user);
+});
+
+app.listen(port, () => {                                  //port
     console.log(`Started on port ${port}`)
 });
 
