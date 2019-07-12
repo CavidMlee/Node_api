@@ -98,6 +98,21 @@ app.patch('/todos/:id', (req, res) => {                     //update isidir.Comp
     })
 });
 
+//POST User
+app.post('/users', (req, res) => {                      //post ishi
+
+    const body = _.pick(req.body, ['email', 'password'])   // lodash-in pick funksiasi icinde obyekt saxlayir
+    const user = new User(body);
+
+    user.save().then(() => {
+        return user.generateAuthToken()   //  bu funksiyani user.js-de yaratdiq bu hem token yaradir hemde useri save edir
+    }).then((token) => {
+        res.header('x-auth', token).send(user)
+    }).catch((e) => {
+        res.status(400).send(e);
+    });
+});
+
 app.listen(port, () => {
     console.log(`Started on port ${port}`)
 });
