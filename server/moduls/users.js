@@ -56,6 +56,16 @@ UserSchema.methods.generateAuthToken = function () {      //token yaradan funksi
     });
 };
 
+UserSchema.methods.removeToken = function (token){
+    const user = this;
+
+   return user.update({
+       $pull:{                                  //$pull remov edir arraydan
+           tokens:{token}
+       }
+   });
+};
+
 UserSchema.statics.findByToken = function (token) {    //tokene gore tapmaq
     const User = this;
     let decoded;

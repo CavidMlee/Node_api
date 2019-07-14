@@ -120,8 +120,8 @@ app.post('/users/login', (req, res) => {
     const body = _.pick(req.body, ['email', 'password'])   // lodash-in pick funksiasi icinde obyekt saxlayir
 
     User.findByCredentials(body.email, body.password).then((user) => {          //bu funksiyani user.js-de yaratmisiq
-        return user.generateAuthToken().then((token)=>{                      //tokenide vere blmek ucun
-            res.header('x-auth',token).send(user);
+        return user.generateAuthToken().then((token) => {                      //tokenide vere blmek ucun
+            res.header('x-auth', token).send(user);
         })
     }).catch((e) => {
         res.status(400).send();
@@ -130,6 +130,14 @@ app.post('/users/login', (req, res) => {
 
 app.get('/users/me', authenticate, (req, res) => {          //user-in get isi
     res.send(req.user);
+});
+
+app.delete('/users/me/token', authenticate, (req, res) => {         //logout
+    req.user.removeToken(req.token).then(() => {
+        res.status(200).send();
+    }, () => {
+        res.status(400).send();
+    });
 });
 
 app.listen(port, () => {                                  //port
