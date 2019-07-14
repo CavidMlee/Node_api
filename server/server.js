@@ -8,7 +8,7 @@ const { ObjectId } = require('mongodb');
 
 const { Todo } = require('./moduls/todo.js');
 const { User } = require('./moduls/users.js');
-const {authenticate} = require('./middleware/authenticate');
+const { authenticate } = require('./middleware/authenticate');
 
 const port = process.env.PORT // Heroku ve localhost ucundur
 
@@ -114,7 +114,21 @@ app.post('/users', (req, res) => {                      //post ishi
     });
 });
 
-app.get('/users/me',authenticate, (req, res) => {          //user-in get isi
+
+//Post/user/login (email,password)
+app.post('/users/login', (req, res) => {
+    const body = _.pick(req.body, ['email', 'password'])   // lodash-in pick funksiasi icinde obyekt saxlayir
+
+    User.findByCredentials(body.email, body.password).then((user) => {          //bu funksiyani user.js-de yaratmisiq
+        return user.generateAuthToken().then((token)=>{                      //tokenide vere blmek ucun
+            res.header('x-auth',token).send(user);
+        })
+    }).catch((e) => {
+        res.status(400).send();
+    });
+})
+
+app.get('/users/me', authenticate, (req, res) => {          //user-in get isi
     res.send(req.user);
 });
 
