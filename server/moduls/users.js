@@ -56,7 +56,7 @@ UserSchema.methods.generateAuthToken = function () {      //token yaradan funksi
     });
 };
 
-UserSchema.methods.removeToken = function (token){
+UserSchema.methods.removeToken = function (token){                 //Tokeni silen
     const user = this;
 
    return user.update({

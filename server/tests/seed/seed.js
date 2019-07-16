@@ -20,17 +20,23 @@ const users = [{                          //user ucun olan datalar
 {
     _id: userTwoId,
     email: 'cavidmelikli1995@gmail.com',
-    password: 'cavid123'
+    password: 'cavid123',
+    tokens: [{
+        access: 'auth',
+        token: jwt.sign({ _id: userTwoId, access: 'auth' }, 'abc123').toString()
+    }]
 }]
 
 
 const todos = [{                                       //bazaya vurulacaq datadi
     _id: new ObjectId(),
-    text: 'First todo text'
+    text: 'First todo text',
+    _creator: userOneId
 },
 {
     _id: new ObjectId(),
     text: 'Second todo text',
+    _creator: userTwoId,
     completed: true,
     completedAt: 333
 }];

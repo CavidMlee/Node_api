@@ -16,9 +16,10 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.post('/todos', (req, res) => {                    //post ishi
+app.post('/todos', authenticate, (req, res) => {                    //post ishi
     const todo = new Todo({
-        text: req.body.text                          //postman-dan verdiyimiz text-i goturur
+        text: req.body.text,                          //postman-dan verdiyimiz text-i goturur
+        _creator: req.user._id
     });
 
     todo.save().then((doc) => {
@@ -28,22 +29,27 @@ app.post('/todos', (req, res) => {                    //post ishi
     });
 });
 
-app.get('/todos', (req, res) => {                 //get ishi hamsini listeleyir
-    Todo.find().then((todos) => {
+app.get('/todos', authenticate, (req, res) => {                 //get ishi hamsini listeleyir ve hemcinin autentifikasiya teleb edir
+    Todo.find({
+        _creator: req.user._id
+    }).then((todos) => {
         res.send({ todos })                      //json oldugu ucun obyekt kimi yazdiq yeni {}-icinde
     }, (e) => {
         res.status(400).send(e)
     });
 });
 
-app.get('/todos/:id', (req, res) => {                     //get isi id-ye gore
+app.get('/todos/:id', authenticate, (req, res) => {                     //get isi id-ye gore
     const id = req.params.id
 
     if (!ObjectId.isValid(id)) {                          //bele id yoxdusa
         res.status(404).send();
     }
 
-    Todo.findById(id).then((todos) => {
+    Todo.findOne({
+        _id: id,
+        _creator: req.user._id
+    }).then((todos) => {
         if (!todos) {
             return res.status(404).send();
         };
@@ -55,14 +61,17 @@ app.get('/todos/:id', (req, res) => {                     //get isi id-ye gore
 
 });
 
-app.delete('/todos/:id', (req, res) => {                   //id-ye gore silmek
+app.delete('/todos/:id', authenticate, (req, res) => {                   //id-ye gore silmek
     const id = req.params.id;
 
     if (!ObjectId.isValid(id)) {
         return res.status(404).send()
     }
 
-    Todo.findByIdAndRemove(id).then((todo) => {
+    Todo.findOneAndRemove({
+        _id: id,
+        _creator: req.user._id
+    }).then((todo) => {
         if (!todo) {
             return res.status(404).send();
         }
@@ -73,7 +82,7 @@ app.delete('/todos/:id', (req, res) => {                   //id-ye gore silmek
     });
 });
 
-app.patch('/todos/:id', (req, res) => {                     //update isidir.CompletedAt-i update edirik competed-e gore
+app.patch('/todos/:id', authenticate, (req, res) => {                     //update isidir.CompletedAt-i update edirik competed-e gore
     var id = req.params.id;
     var body = _.pick(req.body, ['text', 'completed']);     //lodash-in pick funksiyasidi.pick - icind eobyekt saxlayir
 
@@ -88,7 +97,7 @@ app.patch('/todos/:id', (req, res) => {                     //update isidir.Comp
         body.completedAt = null;
     }
 
-    Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then((todo) => {   //update isi
+    Todo.findOneAndUpdate({ _id: id, _creator: req.user.id }, { $set: body }, { new: true }).then((todo) => {   //update isi
         if (!todo) {
             return res.status(404).send();
         }
