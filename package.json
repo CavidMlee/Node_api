@@ -16,17 +16,17 @@
   "description": "",
   "dependencies": {
     "bcryptjs": "^2.3.0",
-    "body-parser": "^1.15.2",
+    "body-parser": "^1.20.1",
     "crypto-js": "^3.1.6",
-    "express": "^4.14.0",
-    "jsonwebtoken": "^7.1.9",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^7.4.3",
     "lodash": "^4.15.0",
     "mongodb": "^2.2.5",
-    "mongoose": "^4.5.9"
+    "mongoose": "^4.13.21"
   },
   "devDependencies": {
     "expect": "^1.20.2",
-    "mocha": "^3.0.2",
+    "mocha": "^3.5.3",
     "nodemon": "^1.10.2",
     "supertest": "^2.0.0"
   }
